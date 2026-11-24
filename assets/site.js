@@ -2,6 +2,7 @@
 "use strict";
 var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var GB=window.GB||{lang:"fr",faq:[]};
+function ftb(base,ci,co,g){return base+"?search_stay_dates="+encodeURIComponent(JSON.stringify({checkInDate:ci,checkOutDate:co}))+"&search_occupancies="+encodeURIComponent(JSON.stringify([{numberOfAdults:Math.max(1,Math.min(+g||2,12)),children:[]}]))}
 
 /* menu mobile */
 var bg=$(".burger"),menu=$("#menu");
@@ -13,7 +14,7 @@ $$(".bookbar").forEach(function(f){
   i.min=t(d);var d1=new Date(d.getTime()+864e5),d2=new Date(d.getTime()+2*864e5);i.value=t(d1);o.value=t(d2);o.min=t(d1);
   i.addEventListener("change",function(){var n=new Date(i.value);n.setDate(n.getDate()+1);o.min=t(n);if(o.value<=i.value)o.value=t(n)});
   f.addEventListener("submit",function(e){e.preventDefault();var u=f.dataset.book,q="?checkIn="+i.value+"&checkOut="+o.value+"&guests="+f.elements.g.value;
-    location.href=u?u+(u.indexOf("?")>-1?"&"+q.slice(1):q):f.dataset.fallback+q+"#devis"});
+    location.href=u?ftb(u,i.value,o.value,f.elements.g.value):f.dataset.fallback+q+"#devis"});
 });
 
 /* formulaire contact : préremplit depuis l'URL, ouvre la messagerie */
@@ -58,7 +59,9 @@ function initMap(){
     navigator.geolocation.watchPosition(function(p){meP=[p.coords.latitude,p.coords.longitude];
       if(!meM){meM=L.circleMarker(meP,{radius:8,color:"#fff",weight:3,fillColor:"#2a7de1",fillOpacity:1}).addTo(map);map.setView(meP,18)}else meM.setLatLng(meP);
       if(!cur)dist.textContent="";upd();},function(){dist.textContent=dist.dataset.no},{enableHighAccuracy:true,maximumAge:5000});});
-  var h=location.hash.slice(1);if(h&&pts[h])pick(h);
+  var h=decodeURIComponent(location.hash.slice(1)).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  var hk=pts[h]?h:(h.match(/\b(413|422|423|424|431|432)\b/)||[])[1]||(/fairway|764/.test(h)?"fairway":/ecuyer/.test(h)?"ecuyers":/percheron/.test(h)?"percheron":"");
+  if(hk&&pts[hk])pick(hk);
 }
 if(mapEl){if(window.L)initMap();else window.addEventListener("load",initMap);}
 
@@ -121,7 +124,7 @@ if(cf2&&out&&GB.units){var C=GB.c,U=GB.units,up=document.body.dataset.lang==="fr
   function card(u,q,g,n,who,alts){var gifts=[];if(u.kind==="apt"&&n>=2)gifts.push(C.c_cider);gifts.push(C.c_late);
     var notes=[];if(u.id==="spacieuse"&&n<2)notes.push(C.c_min2);if(who==="golf"&&!q.golf)notes.push(q.winter?C.c_golfmin:C.c_golfoff);if(who==="mariage")notes.push(C.c_wedding);
     var ci=cf2.elements.d.value,co=new Date(new Date(ci).getTime()+n*864e5);
-    var bq="?checkIn="+ci+"&checkOut="+iso(co)+"&guests="+g,bk=GB.book?GB.book+(GB.book.indexOf("?")>-1?"&"+bq.slice(1):bq):"contact.html"+bq+"#devis";
+    var bq="?checkIn="+ci+"&checkOut="+iso(co)+"&guests="+g,bk=GB.book?ftb(GB.book,ci,iso(co),Math.min(g,u.guests)):"contact.html"+bq+"#devis";
     var PICS={deluxe:[1,3,2],spacieuse:[1,2,3],fairway:[1,2,4],ecuyers:[1,2,4],percheron:[1,2,3]},pics=PICS[u.id].map(function(i){return u.id+"-"+i});
     if(who==="golf")pics=["golfsunset"].concat(pics.slice(0,2));if(who==="mariage")pics=["fleurs"].concat(pics.slice(0,2));
     var src=function(k,w){return up+"assets/img/"+k+"-"+w+".webp"};
