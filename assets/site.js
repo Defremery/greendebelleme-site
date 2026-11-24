@@ -60,7 +60,7 @@ function initMap(){
       if(!meM){meM=L.circleMarker(meP,{radius:8,color:"#fff",weight:3,fillColor:"#2a7de1",fillOpacity:1}).addTo(map);map.setView(meP,18)}else meM.setLatLng(meP);
       if(!cur)dist.textContent="";upd();},function(){dist.textContent=dist.dataset.no},{enableHighAccuracy:true,maximumAge:5000});});
   var h=decodeURIComponent(location.hash.slice(1)).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  var hk=pts[h]?h:(h.match(/\b(413|422|423|424|431|432)\b/)||[])[1]||(/fairway|764/.test(h)?"fairway":/ecuyer/.test(h)?"ecuyers":/percheron/.test(h)?"percheron":"");
+  var hk=pts[h]?h:(h.match(/\b(413|422|423|424|431|432)\b/)||[])[1]||(/fairway|764/.test(h)?"fairway":/ecuyer|322|331|332/.test(h)?"ecuyers":/percheron|741|742|743/.test(h)?"percheron":"");
   if(hk&&pts[hk])pick(hk);
 }
 if(mapEl){if(window.L)initMap();else window.addEventListener("load",initMap);}
