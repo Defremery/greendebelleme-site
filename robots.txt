@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.greendebelleme.com/sitemap.xml
